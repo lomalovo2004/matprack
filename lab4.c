@@ -2,12 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-
 void delete_digits(FILE *input, FILE *output) {
     int c;
     while ((c = fgetc(input)) != EOF) {
         if (!isdigit(c)) {
-            fputc(c, output);
+            fputc(c, output); 
         }
     }
 }
@@ -67,7 +66,7 @@ int main(int argc, char *argv[]) {
     if (argc > 3) {
         output_file = argv[3];
     } else {
-        output_file = malloc(strlen(input_file) + 5);
+        output_file = malloc(strlen(input_file));
         strcpy(output_file, "out_");
         strcat(output_file, input_file);
     }
