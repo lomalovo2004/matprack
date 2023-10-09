@@ -6,7 +6,7 @@
 void writeToFile(char* filename, char* file1, char* file2, char* file3) {
     FILE* output = fopen(filename, "w");
     if (output == NULL) {
-        printf("Ошибка открытия файла\n");
+        printf("Error opening output file\n");
         return;
     }
 
@@ -14,7 +14,7 @@ void writeToFile(char* filename, char* file1, char* file2, char* file3) {
     FILE* input2 = fopen(file2, "r");
     FILE* input3 = fopen(file3, "r");
     if (input1 == NULL || input2 == NULL || input3 == NULL) {
-        printf("Ошибка открытия входных файлов\n");
+        printf("Error opening input files\\n");
         fclose(output);
         return;
     }
@@ -57,13 +57,13 @@ void writeToFile(char* filename, char* file1, char* file2, char* file3) {
 void transformFile(char* filename, char* input) {
     FILE* output = fopen(filename, "w");
     if (output == NULL) {
-        printf("Ошибка открытия файла\n");
+        printf("Error opening output file\n");
         return;
     }
 
     FILE* input_file = fopen(input, "r");
     if (input_file == NULL) {
-        printf("Ошибка открытия входного файла\n");
+        printf("Error opening input files\n");
         fclose(output);
         return;
     }
@@ -100,7 +100,7 @@ void transformFile(char* filename, char* input) {
 
 int main(int argc, char* argv[]) {
     if (argc < 4) {
-        printf("Недостаточно аргументов\n");
+        printf("Need more arguments\n");
         return 1;
     }
 
@@ -109,7 +109,7 @@ int main(int argc, char* argv[]) {
 
     if (strcmp(flag, "-r") == 0) {
         if (argc != 5) {
-            printf("Некорректное количество аргументов для флага -r\n");
+            printf("Invalid quantity arguments for flag -r\n");
             return 1;
         }
 
@@ -120,7 +120,7 @@ int main(int argc, char* argv[]) {
     } 
     else if (strcmp(flag, "-a") == 0) {
         if (argc != 4) {
-            printf("Некорректное количество аргументов для флага -a\n");
+            printf("Invalid quantity arguments for flag -a\n");
             return 1;
         }
 
@@ -128,10 +128,10 @@ int main(int argc, char* argv[]) {
         transformFile(filename, input);
     } 
     else {
-        printf("Некорректный флаг\n");
+        printf("Invalid flag\n");
         return 1;
     }
 
-    printf("Программа выполнена успешно\n");
+    printf("Program completed successfully\n");
     return 0;
 }
