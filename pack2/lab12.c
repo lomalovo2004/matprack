@@ -1,24 +1,48 @@
+#include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <ctype.h>
 #include <stdarg.h>
 #include <math.h>
 
-double geometric_mean(int count, ...)
+typedef enum{
+    OK = 0,
+    INVALID
+} EXIT_CODE;
+
+
+
+
+EXIT_CODE geometric_mean (double* result, int count, ...)
 {
+
+    if (count < 1){
+        return INVALID;
+    }
+
+    *result = 1;
+
     va_list args;
-    double product = 1.0;
-    
+
     va_start(args, count);
-    
+
     for (int i = 0; i < count; i++)
     {
-        double num = va_arg(args, double);
-        product *= num;
+
+        double temp = va_arg(args, double);
+        *result *= temp;
+
     }
-    
+
+
     va_end(args);
-    
-    return pow(product, 1.0 / count);
+    *result = pow(*result, 1.0 / count);
+
+
+    return OK;
+
 }
+
 
 double grade(double base, int exponent)
 {
@@ -38,11 +62,21 @@ double grade(double base, int exponent)
     }
 }
 
+
+
 int main()
 {
-    double mean = geometric_mean(3, 2.0, 4.0, 8.0);
-    printf("Average geometric mean: %.2f\n", mean);
-    
+    double res = 0;
+    int a = geometric_mean(&res, 3, (double) 3, (double) 3, (double) 9);
+
+    if (a == INVALID){
+        printf("Count must 1 or greater\n");
+    }
+    else{
+        printf("Average geometric mean: %.2f\n", res);
+    }
+
+
     double result = grade(2.0, 5);
     printf("Grade: %.2f\n", result);
     
