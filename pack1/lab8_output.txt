@@ -1,0 +1,18 @@
+10101 2 21
+A1B2 12 17558
+11011 2 27
+XYZ 36 44027
+A3a2LSCB 29 174490295181
+0 2 0
+0 2 0
+123 4 27
+1 2 1
+101 2 5
+A 11 10
+-A 11 -10
+DS*123 29 405
+Афы!+=- Error: radix of this number is not in range [2; 36]
+ABC 13 1845
+=-af Error: radix of this number is not in range [2; 36]
+ыпл+fa Error: radix of this number is not in range [2; 36]
+AXtch13cgh 34 667643615204265

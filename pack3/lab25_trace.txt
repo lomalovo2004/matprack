@@ -1,0 +1,6 @@
+Found student:
+ID: 1
+Name: Ya
+Surname: Ustal
+Group: 666
+Average 5.00

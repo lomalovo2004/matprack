@@ -1,0 +1,5 @@
+1 Ya Ustal 666 5 5 5 5 5
+13 Abdul Akbar 113 3 3 2 2 3
+23 Konstantin Saveliev 213 3 3 2 3 3
+21 Valentin Zaycev 221 2 2 2 2 2
+45 Nehochu Delatlabi 301 4 4 4 4 4
