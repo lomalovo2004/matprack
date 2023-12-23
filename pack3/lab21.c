@@ -5,12 +5,12 @@ void decimalToBase(int number, int r) {
     char digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     int base = 1 << r;
     char* res = (char*)malloc(32 * sizeof(char));
-    int i = 0;
-    int is_negative = 0;
     if (res == NULL){
-        printf("Memmory does not allocate\n");
+        printf("Memmory does not allocated\n");
         return;
     }
+    int i = 0;
+    int is_negative = 0;
 
     if (number < 0) {
         is_negative = 1;

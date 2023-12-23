@@ -3,135 +3,123 @@
 #include <string.h>
 #include <ctype.h>
 
-void writeToFile(char* filename, char* file1, char* file2, char* file3) {
-    FILE* output = fopen(filename, "w");
-    if (output == NULL) {
-        printf("Error opening output file\n");
-        return;
+
+int convertToBase4(int decimal) {
+    int base4 = 0, i = 1;
+
+    while (decimal != 0) {
+        base4 += (decimal % 4) * i;
+        decimal /= 4;
+        i *= 10;
     }
 
-    FILE* input1 = fopen(file1, "r");
-    FILE* input2 = fopen(file2, "r");
-    FILE* input3 = fopen(file3, "r");
-    if (input1 == NULL || input2 == NULL || input3 == NULL) {
-        printf("Error opening input files\\n");
-        fclose(output);
-        return;
-    }
-
-    char lexeme[100];
-    int count1 = 0, count2 = 0, count3 = 0;
-    int position = 1;
-
-    while (1) {
-        if (position % 2 == 1) {
-            if (fscanf(input2, "%s", lexeme) != EOF) {
-                fprintf(output, "%s ", lexeme);
-                count2++;
-            } else {
-                break;
-            }
-        } else {
-            if (fscanf(input3, "%s", lexeme) != EOF) {
-                fprintf(output, "%s ", lexeme);
-                count3++;
-            } else {
-                break;
-            }
-        }
-
-        position++;
-    }
-
-    rewind(input1);
-    while (fscanf(input1, "%s", lexeme) != EOF) {
-        fprintf(output, "%s ", lexeme);
-        count1++;
-    }
-
-    fclose(input1);
-    fclose(input2);
-    fclose(output);
+    return base4;
 }
 
-void transformFile(char* filename, char* input) {
-    FILE* output = fopen(filename, "w");
-    if (output == NULL) {
+
+void writeToFileR(char* outputFilePath, char* file1Path, char* file2Path) {
+    FILE* outputFile = fopen(outputFilePath, "w");
+    FILE* file1 = fopen(file1Path, "r");
+    FILE* file2 = fopen(file2Path, "r");
+
+    if (file1 == NULL){
+        printf("Error opening fiel1\n");
+        return;
+    }
+    if (file2 == NULL){
+        printf("Error opening fiel2\n");
+        return;
+    }
+    if (outputFile == NULL){
         printf("Error opening output file\n");
         return;
     }
+    
 
-    FILE* input_file = fopen(input, "r");
-    if (input_file == NULL) {
-        printf("Error opening input files\n");
-        fclose(output);
-        return;
+    char word1[BUFSIZ];
+    char word2[BUFSIZ];
+    while (fscanf(file1, "%s", word1) == 1 && fscanf(file2, "%s", word2) == 1) {
+        fprintf(outputFile, "%s %s ", word1, word2);
     }
 
-    char lexeme[100];
+    while (fscanf(file1, "%s", word1) == 1) {
+        fprintf(outputFile, "%s ", word1);
+    }
+
+    while (fscanf(file2, "%s", word2) == 1) {
+        fprintf(outputFile, "%s ", word2);
+    }
+
+    fclose(outputFile);
+    fclose(file1);
+    fclose(file2);
+}
+
+
+void writeToFileA(char* outputFilePath, char* inputFilePath) {
+    FILE* outputFile = fopen(outputFilePath, "w");
+    FILE* inputFile = fopen(inputFilePath, "r");
+    char word[BUFSIZ];
     int count = 0;
 
-    while (fscanf(input_file, "%s", lexeme) != EOF) {
-        if (count % 10 == 9) {
-            for (int i = 0; i < strlen(lexeme); i++) {
-                if (isalpha(lexeme[i])) {
-                    lexeme[i] = tolower(lexeme[i]);
-                    lexeme[i] = '0' + (tolower(lexeme[i]) - 'a');
-                }
-            }
-        } else if (count % 2 == 1) {
-            for (int i = 0; i < strlen(lexeme); i++) {
-                if (isalpha(lexeme[i])) {
-                    lexeme[i] = tolower(lexeme[i]);
-                }
-            }
-        } else if (count % 5 == 4) {
-            int num = atoi(lexeme);
-            sprintf(lexeme, "%o", num);
-        }
-
-        fprintf(output, "%s ", lexeme);
+    while (fscanf(inputFile, "%s", word) == 1) {
         count++;
+        if (count % 10 == 0) {
+            for (int i = 0; word[i] != '\0'; i++) {
+                if (isalpha(word[i])) {
+                    word[i] = tolower(word[i]);
+                    int ascii =  word[i];
+                    int base4 = convertToBase4(ascii);
+                    if (base4 > 3333){
+                        base4 = 3333;
+                    }
+                    fprintf(outputFile, "%04d", base4);
+                } else {
+                    fprintf(outputFile, "%c", word[i]);
+                }
+            }
+            fprintf(outputFile, " ");
+        }
+ 
+        else if (count % 2 == 0) {
+            for (int i = 0; word[i] != '\0'; i++) {
+                if (isalpha(word[i])) {
+                    word[i] = tolower(word[i]);
+                }
+                fprintf(outputFile, "%c", word[i]);
+            }
+            fprintf(outputFile, " ");
+        } 
+        else if (count % 5 == 0) {
+            for (int i = 0; word[i] != '\0'; i++) {
+                fprintf(outputFile, "%o", word[i]);
+            }
+            fprintf(outputFile, " ");
+        } 
+        else {
+            fprintf(outputFile, "%s ", word);
+        }
     }
 
-    fclose(input_file);
-    fclose(output);
+    fclose(outputFile);
+    fclose(inputFile);
 }
 
+
 int main(int argc, char* argv[]) {
-    if (argc < 4) {
-        printf("Need more arguments\n");
+    if (argc !=4 && argc != 5) {
+        printf("Not enough arguments\n");
         return 1;
     }
 
-    char* flag = argv[1];
-    char* filename = argv[2];
-
-    if (strcmp(flag, "-r") == 0) {
-        if (argc != 5) {
-            printf("Invalid quantity arguments for flag -r\n");
-            return 1;
-        }
-
-        char* file1 = argv[2];
-        char* file2 = argv[3];
-        char* file3 = argv[4];
-        writeToFile(filename, file1, file2, file3);
-    } 
-    else if (strcmp(flag, "-a") == 0) {
-        if (argc != 4) {
-            printf("Invalid quantity arguments for flag -a\n");
-            return 1;
-        }
-
-        char* input = argv[3];
-        transformFile(filename, input);
-    } 
-    else {
-        printf("Invalid flag\n");
+    if (strcmp(argv[1], "-r") == 0) {
+        writeToFileR(argv[4], argv[2], argv[3]);
+    } else if (strcmp(argv[1], "-a") == 0) {
+        writeToFileA(argv[3], argv[2]);
+    } else {
+        printf("Invalid option\n");
         return 1;
     }
 
-    printf("Program completed successfully\n");
     return 0;
 }

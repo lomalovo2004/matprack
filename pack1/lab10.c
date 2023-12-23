@@ -1,4 +1,4 @@
-
+//worked
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,6 +21,7 @@ void conver_to_radix(long long number, int radix, char* result) {
         result[index++] = '-';
         number = -number;
     }
+
     while (number > 0) {
         int remainder = number % radix;
         if (remainder < 10) {
@@ -143,10 +144,12 @@ int main() {
     }
 
     char* max_radix = (char*)malloc(100 * sizeof(char));
-    if (max_index == NULL){
+    
+    if (max_radix == NULL){
         printf("Memmory does not allocated\n");
         return 1;
     }
+    
     conver_to_radix(numbers[max_index], radix, max_radix);
     printf("The original number, which is the maximum modulo: %s\n", number_strings[max_index]);
 
@@ -155,7 +158,22 @@ int main() {
     printf("Maximum modulo number: %lld\n", max_absolute);
     char result[BUFSIZ];
 
-    if (number_strings[max_index][0] == '-'){
+
+    if (number_strings[max_index][0] == '0'){
+        printf("String representation in radix number system 9: 0\n");
+        printf("String representation in radix number system 18: 0\n");
+        printf("String representation in radix number system 27: 0\n");
+        printf("String representation in radix number system 36: 0\n");
+    }
+
+    else if (number_strings[max_index][0] == '-' && number_strings[max_index][1] == '0'){
+        printf("String representation in radix number system 9: 0\n");
+        printf("String representation in radix number system 18: 0\n");
+        printf("String representation in radix number system 27: 0\n");
+        printf("String representation in radix number system 36: 0\n");
+    }
+
+    else if (number_strings[max_index][0] == '-'){
         conver_to_radix(max_absolute, 9, result);
         remove_leading_zeros(result);
         printf("String representation in radix number system 9: -%s\n", result);
@@ -170,7 +188,7 @@ int main() {
         printf("String representation in radix number system 36: -%s\n", result);
     }
 
-    if (number_strings[max_index][0] != '-'){
+    else if (number_strings[max_index][0] != '-'){
         conver_to_radix(max_absolute, 9, result);
         remove_leading_zeros(result);
         printf("String representation in radix number system 9: %s\n", result);

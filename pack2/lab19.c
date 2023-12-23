@@ -1,14 +1,28 @@
+//неправильно переводит
 #include <stdio.h>
 #include <stdarg.h>
 
-int finite_representation(int base, int count, ...) {
+typedef enum{
+    OK = 1,
+    INVALID
+} EXIT_CODE;
+
+EXIT_CODE finite_representation(int base, int count, ...) {
     va_list args;
     va_start(args, count);
+
+    if (count < 1){
+        return INVALID;
+    }
+
+    if (base <= 0){
+        return INVALID;
+    }
 
     for (int i = 0; i < count; i++) {
         double decimal = va_arg(args, double);
         double fraction = decimal - (int)decimal;
-        // Преобразование десятичной дроби в систему счисления с заданным основанием
+        
         int converted_fraction = 0;
         double power = 1.0 / base;
 
@@ -19,26 +33,26 @@ int finite_representation(int base, int count, ...) {
             converted_fraction += digit;
             fraction -= digit * power;
         }
-        // Проверка наличия бесконечной последовательности нулей или девяток
+        
         if (converted_fraction == 0 || converted_fraction == base - 1) {
-            va_end(args);
-            return 0;
+            printf("%f does not have a finite representation in base %d system\n", decimal, base);
+           
+        } else {
+            printf("%f has a finite representation in base %d system\n", decimal, base);
         }
     }
     va_end(args);
-    return 1;
+    return OK;
 }
 
 int main() {
-    double fraction1 = 0.25;
-    double fraction2 = 2.457;
-    double fraction3 = 0.5;
-    int base = 3;
+    double fraction1 = 0.5;
+    double fraction2 = 0.457;
+    double fraction3 = 0.576;
+    int base = 8;
     int result = finite_representation(base, 3, fraction1, fraction2, fraction3);
-    if (result) {
-        printf("All fractions have finite representation in base %d system.\n", base);
-    } else {
-        printf("One or some fractions do not have finite representation in base %d system\n", base);
+    if (result == INVALID){
+        printf("Count must be greater 1 or greater and base must be greater than 0\n");
     }
     return 0;
 }
