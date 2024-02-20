@@ -3,7 +3,7 @@
 #include <time.h>
 #include <ctype.h>
 
-// Функция для подсчета длины строки
+
 int count_length(char* str) {
     int length = 0;
     while (str[length] != '\0') {
@@ -12,12 +12,11 @@ int count_length(char* str) {
     return length;
 }
 
-// Функция для переворачивания строки
 char* reverse_string(char* str) {
     int length = count_length(str);
     char* reversed = (char*)malloc((length + 1) * sizeof(char));
     if (reversed == NULL){
-        printf("Memory does not allocate for function reverse_string.\n");
+        printf("Memory does not allocated\n");
         return 0;
     }
     for (int i = 0; i < length; i++) {
@@ -27,12 +26,12 @@ char* reverse_string(char* str) {
     return reversed;
 }
 
-// Функция для преобразования нечетных символов в верхний регистр
+
 char* uppercase_odd_chars(char* str) {
     int length = count_length(str);
     char* uppercase = (char*)malloc((length + 1) * sizeof(char));
     if (uppercase == NULL){
-        printf("Memory does not allocate for function uppercase_odd_chars.\n");
+        printf("Memory does not allocated\n");
         return 0;
     }
     for (int i = 0; i < length; i++) {
@@ -57,12 +56,12 @@ char* uppercase_odd_chars(char* str) {
         return res;
     }
 
-// Функция для получения новой строки с символами в определенном порядке
+
 char* rearrange_chars(char *str){
     int length = str_len(str);
     char* new_str = (char*) calloc(length + 1, sizeof(char));
     if (new_str == NULL){
-        printf("Memory does not allocate for function rearrange_chars\n");
+        printf("Memory does not allocated\n");
         return 0;
     }
     int n = 0;
@@ -89,52 +88,62 @@ char* rearrange_chars(char *str){
 }
 
 
-// Функция для конкатенации строк в псевдослучайном порядке
+void copy_string(char* dest, char* src) {
+    int i = 0;
+    while (src[i] != '\0') {
+        dest[i] = src[i];
+        i++;
+    }
+    dest[i] = '\0';
+}
+
 char* concatenate_strings(int argc, char* argv[], unsigned int seed) {
-    srand(seed);
     int total_length = 0;
-    for (int i = 2; i < argc; i++) {
+    for (int i = 3; i < argc; i++) {
         total_length += count_length(argv[i]);
     }
-    char* concatenated = (char*)malloc((total_length + 1) * sizeof(char));
-    if (concatenated == NULL){
-        printf("Memory does not allocate for function concatenate_strings(concatenated).\n");
-        return 0;
-    }
-    int index = 0;
-    int* indices = (int*)malloc((argc - 2) * sizeof(int));
-    if (concatenated == NULL){
-        printf("Memory does not allocate for function concatenate_strings(indices).\n");
-        return 0;
-    }
-    for (int i = 0; i < argc - 2; i++) {
-        indices[i] = i;
-    }
-    for (int i = argc - 2; i > 0; i--) {
-        int j = rand() % (i + 1);
-        int temp = indices[i];
-        indices[i] = indices[j];
-        indices[j] = temp;
-    }
-    for (int i = 0; i < argc - 2; i++) {
-        int length = count_length(argv[indices[i] + 2]);
-        for (int j = 0; j < length; j++) {
-            concatenated[index++] = argv[indices[i] + 2][j];
+
+    char* result = (char*)malloc((total_length + 1) * sizeof(char));
+
+    int current_index = 0;
+    srand(seed);
+
+    while (argc - 3 > 0) {
+        int random_index = rand() % (argc - 3) + 3;
+
+        int currentLength = count_length(argv[random_index]);
+
+        copy_string(result + current_index, argv[random_index]); 
+        current_index += currentLength;
+        argc--;
+
+        for (int i = random_index; i < argc; i++) {
+            argv[i] = argv[i + 1];
+            
         }
     }
-    concatenated[total_length] = '\0';
-    free(indices);
-    return concatenated;
+    result[current_index] = '\0'; 
+
+    return result;
 }
+
+
+
+void Usage()
+{
+    printf("Usage:\n./lab11 -l | -r | -u | -n 'string'\n./lab11 -c <unsigned int seed> 'string 1' 'string 2' ('string 3' .... 'string N)'\n");
+}
+
 
 int main(int argc, char* argv[]) {
     if (argc < 3) {
-        printf("Usage: ./lab11 <-flag> string <strings for flag '-c'>\n");
+        Usage();
         return 1;
     }
 
     char flag = argv[1][1];
     char* str = argv[2];
+    unsigned int seed;
 
     switch (flag) {
         case 'l':
@@ -150,17 +159,27 @@ int main(int argc, char* argv[]) {
             printf("Rearranged characters: %s\n", rearrange_chars(str));
             break;
         case 'c':
-            if (argc < 4) {
-                printf("Not enough additional arguments for -c flag\n");
+            if (argc < 5) {
+                printf("Error: Not enough additional arguments for flag -c\n");
+                Usage();
                 return 1;
             }
-            unsigned int seed = (unsigned int)time(NULL);
-            printf("Concatenated strings: %s\n", concatenate_strings(argc, argv, seed));
+            
+            if ((seed = atoi(argv[2])) == 0){
+                printf("Error: Not enough additional arguments for flag -c\n");
+                Usage();
+                return 1;
+            }
+            char* concatenated_string = concatenate_strings(argc, argv, seed);
+            printf("Concatenated strings: %s\n", concatenated_string);
+            free(concatenated_string);
             break;
         default:
-            printf("Invalid flag\n");
+            printf("Error: Invalid flag\n");
+            Usage();
             return 1;
     }
 
     return 0;
 }
+

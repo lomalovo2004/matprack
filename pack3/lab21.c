@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void decimalToBase(int number, int r) {
+void decimal_to_base(int number, int r) {
     char digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     int base = 1 << r;
     char* res = (char*)malloc(32 * sizeof(char));
@@ -36,10 +36,19 @@ void decimalToBase(int number, int r) {
 }
 
 int main() {
-    int number = 1200;
+    int number = 10000000;
 
-    for (int r = 1; r <= 5; r++) {
-        decimalToBase(number, r);
+    if (number == 0 || number == -0){
+        printf("0\n");
+        printf("0\n");
+        printf("0\n");
+        printf("0\n");
+        printf("0\n");
+    }
+    else{
+        for (int r = 1; r <= 5; r++) {
+            decimal_to_base(number, r);
+        }
     }
 
     return 0;
