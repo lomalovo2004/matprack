@@ -45,16 +45,16 @@ char* uppercase_odd_chars(char* str) {
     return uppercase;
 }
 
-    int str_len(char const *str) {
-        int i = 0, res = 0;
-        char c = str[0];
-        while (c != '\0') {
-            res++;
-            c = str[i];
-            i++;
-        }
-        return res;
+int str_len(char const *str) {
+    int i = 0, res = 0;
+    char c = str[0];
+    while (c != '\0') {
+        res++;
+        c = str[i];
+        i++;
     }
+    return res;
+}
 
 
 char* rearrange_chars(char *str){
