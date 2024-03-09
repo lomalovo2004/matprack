@@ -1,8 +1,17 @@
+//идеал
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+
+
+typedef enum{
+    OK = 0,
+    INVALID,
+    BAD_ALLOC
+} EXIT_CODE;
+
 
 int range_checker(char* str, int radix){
     int flag = 0;
@@ -55,18 +64,39 @@ char* add_zeros(char* str, int n){
     return res;
 }
 
-char* delete_leading_zeros(char *number){
+char* delete_leading_zeros(char *number) {
     int length = (int)strlen(number);
     int index = 0;
+    
+    int all_zeros = 1;
     for (int i = 0; i < length; ++i) {
-        if (number[i] != '0'){
+        if (number[i] != '0') {
+            all_zeros = 0;
+            break;
+        }
+    }
+    
+    if (all_zeros) {
+        char* res = (char*)calloc(2, sizeof(char));
+        if (res == NULL) {
+            printf("Memory does not allocate for function delete_leading_zeros\n");
+            return NULL;
+        }
+        res[0] = '0';
+        res[1] = '\0';
+        return res;
+    }
+    
+    for (int i = 0; i < length; ++i) {
+        if (number[i] != '0') {
             index = i;
             break;
         }
     }
+    
     int new_length = length - index;
-    char* res = calloc(new_length + 1, sizeof(char));
-    if (res == NULL){
+    char* res = (char*)calloc(new_length + 1, sizeof(char));
+    if (res == NULL) {
         printf("Memory does not allocate for function delete_leading_zeros\n");
         return NULL;
     }
@@ -115,37 +145,40 @@ char* str_sum(char* prev_res, char* str, int radix){
     return res;
 }
 
-int final_sum(char* res, int n, int coef, ...){
-    if (n < 2 || n > 36){
+int final_sum(char* res, int n, int coef, ...)
+{
+    if (n < 2 || n > 36) {
         printf("Radix must be in range [2, 36]\n");
-        exit(0);
+        return INVALID;
     }
     va_list str;
     va_start(str, coef);
     if (coef == 0) {
         printf("No numbers provided.\n");
-        exit(0);
+        return INVALID;
     }
     for (int i = 0; i < coef; ++i) {
         char* temp = va_arg(str, char*);
-        if (range_checker(temp, n) == 0){
+        if (range_checker(temp, n) == 0) {
             printf("Number is greater than radix\n");
-            exit(0);
+            return INVALID;
         }
         char* temp_res = str_sum(res, temp, n);
-        if (temp_res == NULL){
-            printf("Memory does not allocate for function action\n");
-            return 0;
+        if (temp_res == NULL) {
+            return INVALID;
         }
         strcpy(res, temp_res);
         free(temp_res);
     }
-    return 1;
+    return OK;
 }
+
 
 int main(){
     char res[BUFSIZ] = "0";
-    final_sum(res, 36, 4, "0A1", "002F", "0023U", "00AKHXV");
-    printf("Sum: %s\n", res);
+    int temp = final_sum(res, 10, 4, "00000", "00000000", "00009111999191919191999999000", "10000000");
+    if (temp == OK){
+        printf("Sum: %s\n", res);
+    }
     return 0;
 }
