@@ -30,7 +30,7 @@ typedef enum
     WRONG_COUNT_OF_BRACKETS,
     OVERFLOW,
 
-} status_code;
+} EXIT_CODE;
 
 void print_errors(int flag)
 {
@@ -277,7 +277,7 @@ Node* create_node(char data)
     return new_node;
 }
 
-status_code build_expression_tree(const char* postfix, int* error, Node** tree_result)
+EXIT_CODE build_expression_tree(const char* postfix, int* error, Node** tree_result)
 {
     Node* node_operand = NULL;
     Node* node_operator = NULL;
@@ -378,7 +378,7 @@ void free_tree(Node *root)
     free(root);
 }
 
-status_code validate_infix_expression(const char* infix)
+EXIT_CODE validate_infix_expression(const char* infix)
 {
     int i = 0;
     while (infix[i] != '\0')
@@ -416,7 +416,7 @@ status_code validate_infix_expression(const char* infix)
     return OK;
 }
 
-status_code infix_to_postfix(const char* infix, char** postfix)
+EXIT_CODE infix_to_postfix(const char* infix, char** postfix)
 {
     Stack* stack = (Stack*)malloc(sizeof(Stack));
     if (!stack)
@@ -561,7 +561,7 @@ status_code infix_to_postfix(const char* infix, char** postfix)
     return OK;
 }
 
-status_code read_file(FILE* input_file, char** string, int* error)
+EXIT_CODE read_file(FILE* input_file, char** string, int* error)
 {
     int capacity = 10;
 
@@ -602,7 +602,7 @@ status_code read_file(FILE* input_file, char** string, int* error)
 
     (*string)[index] = '\0';
 
-    status_code st_validation = validate_infix_expression(*string);
+    EXIT_CODE st_validation = validate_infix_expression(*string);
     if (st_validation != OK)
     {
         return INVALID_INPUT;
@@ -740,7 +740,7 @@ void create_truth_table(FILE* output_file, char* name_of_variables, int count_of
     }
 }
 
-status_code all_functions(char* filename)
+EXIT_CODE all_functions(char* filename)
 {
     FILE *input_file = fopen(filename, "r");
     if (!input_file)
@@ -753,20 +753,20 @@ status_code all_functions(char* filename)
     char* postfix_expression = NULL;
     int error;
 
-    status_code st_read = read_file(input_file, &infix_expression, &error);
+    EXIT_CODE st_read = read_file(input_file, &infix_expression, &error);
     if (st_read != OK)
     {
         return INVALID_INPUT;
     }
 
-    status_code st_infix_to_postfix = infix_to_postfix(infix_expression, &postfix_expression);
+    EXIT_CODE st_infix_to_postfix = infix_to_postfix(infix_expression, &postfix_expression);
     if (st_infix_to_postfix != OK)
     {
         return st_infix_to_postfix;
     }
 
 
-    status_code st_build_tree = build_expression_tree(postfix_expression, &error, &tree_result);
+    EXIT_CODE st_build_tree = build_expression_tree(postfix_expression, &error, &tree_result);
     if (st_build_tree != OK)
     {
         return st_build_tree;
@@ -820,7 +820,7 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    status_code st = all_functions(argv[1]);
+    EXIT_CODE st = all_functions(argv[1]);
     if (st == OK)
     {
         printf("good\n");
