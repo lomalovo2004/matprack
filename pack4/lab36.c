@@ -30,7 +30,7 @@ typedef enum
     WRONG_COUNT_OF_BRACKETS,
     OVERFLOW,
 
-} EXIT_CODE;
+} status_code;
 
 void print_errors(int flag)
 {
@@ -212,6 +212,7 @@ int priority(const char data)
     }
 }
 
+/*
 int my_strlen(const char *string)
 {
     if (!(*string))
@@ -227,11 +228,13 @@ int my_strlen(const char *string)
     }
     return count;
 }
+*/
 
 bool check_brackets(const char* string)
 {
     int value = 0;
-    int len = my_strlen(string);
+    //int len = my_strlen(string);
+    int len = strlen(string);
 
     for (int i = 0; i < len; i++)
     {
@@ -277,7 +280,7 @@ Node* create_node(char data)
     return new_node;
 }
 
-EXIT_CODE build_expression_tree(const char* postfix, int* error, Node** tree_result)
+status_code build_expression_tree(const char* postfix, int* error, Node** tree_result)
 {
     Node* node_operand = NULL;
     Node* node_operator = NULL;
@@ -290,7 +293,8 @@ EXIT_CODE build_expression_tree(const char* postfix, int* error, Node** tree_res
 
     initialize_tree(stack);
 
-    int len = my_strlen(postfix);
+    //int len = my_strlen(postfix);
+    int len = strlen(postfix);
 
     for (int i = 0; i < len; i++)
     {
@@ -378,7 +382,7 @@ void free_tree(Node *root)
     free(root);
 }
 
-EXIT_CODE validate_infix_expression(const char* infix)
+status_code validate_infix_expression(const char* infix)
 {
     int i = 0;
     while (infix[i] != '\0')
@@ -416,7 +420,7 @@ EXIT_CODE validate_infix_expression(const char* infix)
     return OK;
 }
 
-EXIT_CODE infix_to_postfix(const char* infix, char** postfix)
+status_code infix_to_postfix(const char* infix, char** postfix)
 {
     Stack* stack = (Stack*)malloc(sizeof(Stack));
     if (!stack)
@@ -426,7 +430,8 @@ EXIT_CODE infix_to_postfix(const char* infix, char** postfix)
 
     initialize(stack);
 
-    int len = my_strlen(infix);
+    //int len = my_strlen(infix);
+    int len = strlen(infix);
     *postfix = (char*)malloc(sizeof(char) * (len + 1));
     if (!(*postfix))
     {
@@ -561,7 +566,7 @@ EXIT_CODE infix_to_postfix(const char* infix, char** postfix)
     return OK;
 }
 
-EXIT_CODE read_file(FILE* input_file, char** string, int* error)
+status_code read_file(FILE* input_file, char** string, int* error)
 {
     int capacity = 10;
 
@@ -602,7 +607,7 @@ EXIT_CODE read_file(FILE* input_file, char** string, int* error)
 
     (*string)[index] = '\0';
 
-    EXIT_CODE st_validation = validate_infix_expression(*string);
+    status_code st_validation = validate_infix_expression(*string);
     if (st_validation != OK)
     {
         return INVALID_INPUT;
@@ -740,7 +745,7 @@ void create_truth_table(FILE* output_file, char* name_of_variables, int count_of
     }
 }
 
-EXIT_CODE all_functions(char* filename)
+status_code all_functions(char* filename)
 {
     FILE *input_file = fopen(filename, "r");
     if (!input_file)
@@ -753,20 +758,20 @@ EXIT_CODE all_functions(char* filename)
     char* postfix_expression = NULL;
     int error;
 
-    EXIT_CODE st_read = read_file(input_file, &infix_expression, &error);
+    status_code st_read = read_file(input_file, &infix_expression, &error);
     if (st_read != OK)
     {
         return INVALID_INPUT;
     }
 
-    EXIT_CODE st_infix_to_postfix = infix_to_postfix(infix_expression, &postfix_expression);
+    status_code st_infix_to_postfix = infix_to_postfix(infix_expression, &postfix_expression);
     if (st_infix_to_postfix != OK)
     {
         return st_infix_to_postfix;
     }
 
 
-    EXIT_CODE st_build_tree = build_expression_tree(postfix_expression, &error, &tree_result);
+    status_code st_build_tree = build_expression_tree(postfix_expression, &error, &tree_result);
     if (st_build_tree != OK)
     {
         return st_build_tree;
@@ -780,7 +785,8 @@ EXIT_CODE all_functions(char* filename)
         return ERROR_WITH_OPENING_FILE;
     }
 
-    int len_postfix_expression = my_strlen(postfix_expression);
+    //int len_postfix_expression = my_strlen(postfix_expression);
+    int len_postfix_expression = strlen(postfix_expression);
     char* name_of_variables = (char*)malloc(sizeof(char) * (len_postfix_expression + 1));
     if (!name_of_variables)
     {
@@ -820,7 +826,7 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    EXIT_CODE st = all_functions(argv[1]);
+    status_code st = all_functions(argv[1]);
     if (st == OK)
     {
         printf("good\n");
