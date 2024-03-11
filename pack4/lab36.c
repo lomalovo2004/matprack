@@ -1,17 +1,3 @@
-/*
-A & B вернет истину, если оба A и B истинны.
-A | B вернет истину, если хотя бы A или B истинны.
-~A вернет истину, если A ложна, и наоборот.
-A -> B вернет истину, если A ложна или B истинна.
-A +> B вернет истину, если оба A и B ложны или оба истинны.
-A <> B вернет истину, если количество истинных значений A и B нечетное.
-A = B вернет истину, если A и B имеют одинаковое значение.
-A ! B вернет истину, если оба A и B ложны или оба истинны.
-A ? B вернет истину, если оба A и B истинны или оба ложны.
-вроде работает
-*/
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,7 +16,7 @@ typedef enum
     WRONG_COUNT_OF_BRACKETS,
     OVERFLOW,
 
-} status_code;
+} EXIT_CODE;
 
 void print_errors(int flag)
 {
@@ -212,28 +198,10 @@ int priority(const char data)
     }
 }
 
-/*
-int my_strlen(const char *string)
-{
-    if (!(*string))
-    {
-        return 0;
-    }
-    int count = 0;
-
-    while (*string)
-    {
-        string++;
-        count++;
-    }
-    return count;
-}
-*/
 
 bool check_brackets(const char* string)
 {
     int value = 0;
-    //int len = my_strlen(string);
     int len = strlen(string);
 
     for (int i = 0; i < len; i++)
@@ -280,7 +248,7 @@ Node* create_node(char data)
     return new_node;
 }
 
-status_code build_expression_tree(const char* postfix, int* error, Node** tree_result)
+EXIT_CODE build_expression_tree(const char* postfix, int* error, Node** tree_result)
 {
     Node* node_operand = NULL;
     Node* node_operator = NULL;
@@ -293,7 +261,6 @@ status_code build_expression_tree(const char* postfix, int* error, Node** tree_r
 
     initialize_tree(stack);
 
-    //int len = my_strlen(postfix);
     int len = strlen(postfix);
 
     for (int i = 0; i < len; i++)
@@ -382,7 +349,7 @@ void free_tree(Node *root)
     free(root);
 }
 
-status_code validate_infix_expression(const char* infix)
+EXIT_CODE validate_infix_expression(const char* infix)
 {
     int i = 0;
     while (infix[i] != '\0')
@@ -420,7 +387,7 @@ status_code validate_infix_expression(const char* infix)
     return OK;
 }
 
-status_code infix_to_postfix(const char* infix, char** postfix)
+EXIT_CODE infix_to_postfix(const char* infix, char** postfix)
 {
     Stack* stack = (Stack*)malloc(sizeof(Stack));
     if (!stack)
@@ -430,7 +397,6 @@ status_code infix_to_postfix(const char* infix, char** postfix)
 
     initialize(stack);
 
-    //int len = my_strlen(infix);
     int len = strlen(infix);
     *postfix = (char*)malloc(sizeof(char) * (len + 1));
     if (!(*postfix))
@@ -566,7 +532,7 @@ status_code infix_to_postfix(const char* infix, char** postfix)
     return OK;
 }
 
-status_code read_file(FILE* input_file, char** string, int* error)
+EXIT_CODE read_file(FILE* input_file, char** string, int* error)
 {
     int capacity = 10;
 
@@ -607,7 +573,7 @@ status_code read_file(FILE* input_file, char** string, int* error)
 
     (*string)[index] = '\0';
 
-    status_code st_validation = validate_infix_expression(*string);
+    EXIT_CODE st_validation = validate_infix_expression(*string);
     if (st_validation != OK)
     {
         return INVALID_INPUT;
@@ -673,13 +639,13 @@ int solve_expression(Node* root, int* values_of_variables, int count_of_variable
             case '=':
                 return (left_value == right_value);
 
-            case '!': // Оператор логического штриха Шеффера not or
+            case '!':
                 return ((!left_value && !right_value) || (left_value && right_value));
 
-            case '?': // Оператор логической функции Вебба not and
+            case '?':
                 return (!(left_value || right_value) || (left_value && right_value));
 
-            case '>': // Оператор логической коимпликации
+            case '>':
                 return (!left_value || right_value);
 
             default:
@@ -745,7 +711,7 @@ void create_truth_table(FILE* output_file, char* name_of_variables, int count_of
     }
 }
 
-status_code all_functions(char* filename)
+EXIT_CODE all_functions(char* filename)
 {
     FILE *input_file = fopen(filename, "r");
     if (!input_file)
@@ -758,20 +724,20 @@ status_code all_functions(char* filename)
     char* postfix_expression = NULL;
     int error;
 
-    status_code st_read = read_file(input_file, &infix_expression, &error);
+    EXIT_CODE st_read = read_file(input_file, &infix_expression, &error);
     if (st_read != OK)
     {
         return INVALID_INPUT;
     }
 
-    status_code st_infix_to_postfix = infix_to_postfix(infix_expression, &postfix_expression);
+    EXIT_CODE st_infix_to_postfix = infix_to_postfix(infix_expression, &postfix_expression);
     if (st_infix_to_postfix != OK)
     {
         return st_infix_to_postfix;
     }
 
 
-    status_code st_build_tree = build_expression_tree(postfix_expression, &error, &tree_result);
+    EXIT_CODE st_build_tree = build_expression_tree(postfix_expression, &error, &tree_result);
     if (st_build_tree != OK)
     {
         return st_build_tree;
@@ -785,7 +751,6 @@ status_code all_functions(char* filename)
         return ERROR_WITH_OPENING_FILE;
     }
 
-    //int len_postfix_expression = my_strlen(postfix_expression);
     int len_postfix_expression = strlen(postfix_expression);
     char* name_of_variables = (char*)malloc(sizeof(char) * (len_postfix_expression + 1));
     if (!name_of_variables)
@@ -826,7 +791,7 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    status_code st = all_functions(argv[1]);
+    EXIT_CODE st = all_functions(argv[1]);
     if (st == OK)
     {
         printf("good\n");
